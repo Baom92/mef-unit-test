@@ -1,6 +1,8 @@
 package net.springboot.javaguides.controller;
 
+import net.sf.jasperreports.engine.JRException;
 import net.springboot.javaguides.entity.Student;
+import net.springboot.javaguides.service.ReportService;
 import net.springboot.javaguides.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 @RestController
@@ -16,6 +19,15 @@ public class StudentController {
 
 	@Autowired
 	private StudentService service;
+
+	@Autowired
+	private ReportService report;
+
+	@GetMapping("/reports/{format}/{categoryId}")
+	public ResponseEntity<String> reporting(@PathVariable String format, @PathVariable int categoryId) throws JRException, FileNotFoundException {
+		String response = this.report.exportReport(format, categoryId);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
 	@GetMapping
 	public ResponseEntity<List<Student>> students() {
